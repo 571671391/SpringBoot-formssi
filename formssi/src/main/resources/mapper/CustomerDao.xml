@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lhn.formssi.dao.CustomerDao">
+    <select id="queryCustomer"  resultType="com.lhn.formssi.entity.Customer">
+   		select user_name,user_number,answer_time,due_date,grade,user_number
+   		from tb_customer a,tb_user b
+   		where a.user_id = 
+   		(
+   		 select user_id 
+   		 from tb_user
+		 <if test="'idCard' == keywordType">where id_card = #{keyword}</if>
+		 <if test="'userNumber' == keywordType">where user_number = #{keyword}</if>
+		 )
+		 order by customer_id desc
+		 limit 1
+					 	
+    </select>
+    
+    <insert id="addCustomer" parameterType="com.lhn.formssi.entity.Customer">
+        insert into tb_customer(user_id,questionnaire_version,answer,answer_time,grade,due_date)
+		values(#{userId},#{questionnaireVersion},#{answer},#{answerTime},#{grade},#{dueDate}) 
+	</insert>
+</mapper>

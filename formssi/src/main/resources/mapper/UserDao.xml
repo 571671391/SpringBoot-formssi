@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lhn.formssi.dao.UserDao">
+    <select id="loginCheck" resultType="com.lhn.formssi.entity.User"
+            parameterType="com.lhn.formssi.entity.User">
+            select user_id,user_name,icbc_branch_number,
+                   id_card,sex,age,user_number,license
+            from tb_user
+            where account_number=#{accountNumber} and password=#{password}
+	</select>
+	
+	<insert id="register" parameterType="com.lhn.formssi.entity.User">
+        insert into tb_user(user_name,id_card,sex,age,icbc_branch_number
+                            ,account_number,password,user_number,license)
+		values(#{userName},#{idCard},#{sex},#{age},#{icbcBranchNumber},
+			   #{accountNumber},#{password},#{userNumber},#{license}) 
+	</insert>
+</mapper>

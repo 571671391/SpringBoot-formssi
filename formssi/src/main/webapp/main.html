@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>销售系统页面</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+    <script type="text/javascript" src="js/axios.min.js"></script>
+    <script type="text/javascript" src="element/element.js"></script>
+    <link rel="stylesheet"  type="text/css" href="element/element.css">
+    <style type="text/css">
+        .el-header{
+            background-color:#dddfe0;
+            color: #333;
+            text-align: center;
+            padding: 0;
+        }
+        
+        .el-aside {
+            background-color:#dddfe0;
+            color: #333;
+            text-align: left;
+            line-height: 60px;
+            height: 600px;
+        }
+        
+        .el-main {
+            margin-left: 2.5px;
+            background-color:#dddfe0;
+            color: #333;
+            text-align: left;
+            height: 600px;
+        }
+        
+        body{
+            background-color:white;
+        }
+
+        body > .el-container {
+            margin-bottom: 60px;
+        }
+
+        .log {
+            height: 88px;
+            width: 20%;
+            float: left;
+        }
+
+        .logimg{
+            height: 88px;
+            width:100%
+        }
+
+        .titleName {
+            margin: 0 2.5px;
+            height: 88px;
+            width: 59.6%;
+            float: left;
+            line-height: 100px;
+            font-size: 36px;
+            font-weight:bold;
+            background-color:rgb(235, 148, 148);
+        }
+
+        .info {
+            float: left;
+            height: 88px;
+            width: 20%;
+            text-align:left;
+            background-color:rgb(139, 231, 185);
+            
+        }
+
+        .dtop {
+            margin-top: 2px;
+        }
+
+		.tap {
+            margin:12px 0;
+            height:30px;
+            background-color:#b8b8b8;
+		}
+
+		label {
+		    color:gray;
+		}
+
+		textarea {
+            outline:none;
+            margin:0;
+            margin-left:13	px
+		}
+
+		table {
+            width:800px;
+            height:600px;
+		}
+
+        .sub {
+            margin-top: 5px;
+        }
+
+        .tap2 {
+            margin:10px 0;
+            height:1px;
+            background-color:#9c9c9c;
+        }
+
+        .inputText {
+            width:200px;
+            height:30px;
+        }
+
+        .inputBtn {
+            width:100px;
+            height:35px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight:bold;
+        }
+
+        .ques {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <ananheader :headerinfo="userInfo"></ananheader>
+        <componnent :is="menuType[parseInt(userInfo.license)]" :userid="userInfo.userId" :qtn="questionnaire" v-if="questionnaire.length > 0"></componnent>
+    </div>
+    <template id="header">
+        <div>
+            <el-container>
+                <el-header height="88px">
+                    <div class="log">
+                        <img class="logimg" src="images/log.jpg">
+                    </div>
+                    <div class="titleName"><span>销 售 系 统</span></div>
+                    <div class="info">
+                        <div><span>银行工商分行号：</span><span>{{headerinfo.icbcBranchNumber}}</span></div>
+                        <div><span>员工编号：</span><span>{{headerinfo.userNumber}}</span></div>
+                        <div><span>人员姓名：</span><span>{{headerinfo.userName}}</span></div>
+                        <div><span>License:{{license[parseInt(headerinfo.license)]}}</span></div>
+                    </div>
+                </el-header>
+            </el-container>
+        </div>
+    </template>
+    <template id="amenu">
+        <div>
+            <el-container>
+                <el-aside width="20%">
+                    <el-menu
+                        default-active="2"
+                        class="dtop">
+                        <el-submenu index="1">
+                            <template slot="title">
+                                <span>用户问卷</span>
+                            </template>
+                            <el-menu-item-group>
+                                <el-menu-item index="1-1" @click="showQuestion">用户问卷</el-menu-item>
+                                <el-menu-item index="1-2" @click="showUserInfo">问卷查询</el-menu-item>
+                            </el-menu-item-group>
+                        </el-submenu>
+                    </el-menu>
+                </el-aside>
+                <el-main>
+                    <qt v-show="isShowQuestion" :uid="userid" :qts="qtn"></qt>
+                    <query v-show="isShowUserInfo"></query>
+                </el-main>
+            </el-container>
+        </div>
+    </template>
+    <template id="bmenu">
+        <div>
+            <el-container>
+                <el-aside width="20%">
+                    <el-menu
+                        default-active="2"
+                        class="dtop">
+                        <el-submenu index="1">
+                            <template slot="title">
+                                <span>销售流程</span>
+                            </template>
+                            <el-menu-item-group>
+                                <el-menu-item index="1-1" @click="showQuestion">销售流程</el-menu-item>
+                                <el-menu-item index="1-2" @click="showUserInfo">流程查询</el-menu-item>
+                            </el-menu-item-group>
+                        </el-submenu>
+                    </el-menu>
+                </el-aside>
+                <el-main>
+                    {{qtn[0]}}
+                    <!-- <qt v-show="isShowQuestion" :uid="userid" :qts="qtn"></qt>
+                    <query v-show="isShowUserInfo"></query> -->
+                </el-main>
+            </el-container>
+        </div>
+    </template>
+    <template id="query">
+        <div>
+            <input type="text" class="inputText" v-model="keyword">
+            <select class="inputBtn" v-model="keywordType">
+                <option value="idCard">身份证号</option>
+                <option value="userNumber">用户编号</option>
+            </select>
+            <input type="button" class="inputBtn" value="查询" @click="dataQuery">
+            <div style="padding-top: 10px;" v-if="isReady">
+                <div class="title">用户资料</div>
+                <div class="tap2"></div>
+                <div><span>客户姓名：</span><span>{{customer.userName}}</span></div>
+                <div class="tap2"></div>
+                <div><span>上次问卷时间：</span><span>{{customer.answerTime}}</span></div>
+                <div class="tap2"></div>
+                <div><span>问卷到期日：</span><span>{{customer.dueDate}}</span></div>
+                <div class="tap2"></div>
+                <div><span>用户评级：</span><span>{{customer.grade}}</span></div>
+                <div class="tap2"></div>
+                <div><span>用户风险：</span><span>无</span></div>
+                <div class="tap2"></div>
+                <div><span>用户编号：</span><span>{{customer.userNumber}}</span></div>                     
+            </div>
+        </div> 
+    </template>
+    <template id="qt">
+        <div>
+            <div class="title ques">用户问卷调查</div>
+            <!-- 题目组件 -->
+            <component v-for="(item, index) in qts" :key="index" :is="item.questionType" :qtdex="index" :qt="item" v-if="qts.length > 0" @answer="getData(arguments)"></component>
+            <input type="button" class="sub inputBtn" value="提交" @click="dataSub()">
+        </div>
+    </template>
+    <template id="qtna">
+        <div>
+            <div class="tap"></div>
+            <h3>{{qt.questionTitle}}</h3>
+            <label><input type="radio" :name="qtdex" :value="options[0][1]" v-model="answer" @click="openEdit('tarea' + qtdex)">{{options[0][0]}}<br></label>
+            <textarea :id="'tarea' + qtdex" rows="10" cols="50" v-model="area" readonly></textarea><br>
+            <label><input type="radio" :name="qtdex" :value="options[1][1]" v-model="answer" @click="closeEdit('tarea' + qtdex)">{{options[1][0]}}</label>
+        </div>
+    </template>
+    <template id="qtnb">
+        <div>
+            <div class="tap"></div>
+            <h3>{{qt.questionTitle}}</h3>
+            <label v-for="(item, index) in options">
+                <input type="radio" :name="qtdex" :value="item[1]" v-model="answer">{{item[0]}}<br>
+            </label>
+        </div>
+    </template>
+    <template id="qtnc">
+        <div>
+            <div class="tap"></div>
+            <h3>{{qt.questionTitle}}</h3>
+            <table border="1"><!-- cellspacing="0" cellpadding="0" -->
+                <tr>
+                    <th rowspan="2" colspan="2">{{options[0]}}</th>
+                    <th colspan="4">{{options[1]}}</th>
+                </tr>
+                <tr>
+                    <td>{{options[2]}}</td>
+                    <td>{{options[3]}}</td>
+                    <td>{{options[4]}}</td>
+                    <td>{{options[5]}}</td>
+                </tr>
+                <tr v-for="(items, trdex) in options[6]" :key="trdex">
+                    <td>{{items[0]}}</td>
+                    <td>{{items[1]}}</td>
+                    <td v-for="(item, tddex) in items[2]">
+                        <input type="radio" :name="qtdex + trdex" :value="item" v-model="answer[trdex]">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+    <script>
+        const qtna = {
+            template: '#qtna',
+            props: {
+                qtdex: "",
+                qt: {},
+            },
+            data() {
+                return {
+                    answer: "",
+                    area: "",
+                    answers: [],
+                    options: [],
+                }
+            },
+            watch: {
+                answer () {
+                    this.answers[0] = this.answer;
+                    this.$emit("answer", this.qtdex, this.answers);
+                },
+                area () {
+                    this.answers[1] = this.area;
+                    this.$emit("answer", this.qtdex, this.answers);
+                }
+            },
+            created (){
+                this.options = JSON.parse(this.qt.questionOption);
+            },
+            methods: {
+                openEdit(id){
+                    document.getElementById(id).readOnly = false;
+                },
+                closeEdit(id){
+                    document.getElementById(id).readOnly = true;
+                },
+            },
+        }
+
+        const qtnb = {
+            template: '#qtnb',
+            props: {
+                qtdex: "",
+                qt: {},
+            },
+            data() {
+                return {
+                    answer: "",
+                    options: [],
+                }
+            },
+            watch: {
+                answer () {
+                    this.$emit("answer", this.qtdex, this.answer);
+                }
+            },
+            created(){
+                this.options = JSON.parse(this.qt.questionOption);
+            },
+            methods: {
+            },
+        }
+
+        const qtnc = {
+            template: '#qtnc',
+            props: {
+                qt: {},
+                qtdex: "",
+            },
+            data() {
+                return {
+                    answer: [],
+                    options: [],
+                }
+            },
+            watch: {
+                answer: {
+                    handler(){
+                        this.$emit("answer", this.qtdex, this.answer);
+                    },
+                    deep: true,
+                }
+            },
+            created (){
+                this.options = JSON.parse(this.qt.questionOption);
+            },
+            methods: {
+            },
+        }
+
+        const qt = {
+            template: '#qt',
+            components: {
+                qtna,qtnb,qtnc
+            },
+            props: {
+                qts: {},
+                uid: "",
+            },
+            data() {
+                return {
+                    tempData: "",
+                    answers: [],
+                }
+            },
+            mounted(){
+                // console.log(this.qts[0]);
+            },
+            methods: {
+                getData(data){
+                    this.answers[data[0]] = data[1];
+                },
+                dataSub(){
+                    let that = this;
+                    if(this.answers.length == this.qts.length) {
+                        for(var i = 0; i < this.answers.length; i++){
+                            if(this.answers[i] == null || this.answers[i] == undefined){
+                                alert("请填写完整的问卷！！！");
+                                return;
+                            }
+                        }
+                    }else {
+                        alert("请填写完整的问卷！！！");    
+                    }
+                    axios.post('http://localhost:8888/formssi/customer/addCustomer',{
+                        userId: that.uid,
+                        questionnaireVersion: that.qts[0].version,    
+                        answer: JSON.stringify(that.answers)
+                    }).then(function (response) {
+                        that.$message({
+                            message: '问卷提交成功',
+                            type: 'success'
+                        });
+                    }).catch(function(error){
+                        console.log(error);
+                        that.$message({
+                            message: '提交问卷发生错误！！！',
+                            type: 'error'
+                        });
+                    });
+                },
+            },
+        }
+
+        const query = {
+            template: '#query',
+            props: {
+            },
+            data() {
+                return {
+                    keyword: "",
+                    keywordType: "idCard",
+                    customer: {},
+                    isReady: false,
+                }
+            },
+            methods: {
+                dataQuery(){
+                    let that = this;
+                    let reg = "";
+                    if(this.keywordType == "idCard"){
+                        reg = new RegExp(/^\d{18}$/);
+                        if(!reg.test(this.keyword)){
+                            that.$message({
+                                message: '请输入18位有效身份证号！！！',
+                                type: 'warning'
+                            });
+                            return;
+                        }
+                    }else{
+                        reg = new RegExp(/^001\d{7}$/);
+                        if(!reg.test(this.keyword)){
+                            that.$message({
+                                message: `请输入以'001'开头的10位有效用户编号！！！`,
+                                type: 'warning'
+                            });
+                            return;
+                        }
+                    }
+                    axios.post('http://localhost:8888/formssi/customer/queryCustomer?keywordType=' + that.keywordType + '&keyword=' + that.keyword,{
+                    }).then(function (response) {
+                        if(response.data.success != null){
+                            that.$message({
+                                message: '查询数据成功',
+                                type: 'success'
+                            });
+                            that.customer = response.data.success;
+                            that.isReady = true;
+                        }else{
+                            that.$message({
+                                message: "请输入正确的查询码",
+                                type: 'warning'
+                            });
+                        }
+                    }).catch(function(error){
+                        console.log(error);
+                        that.$message({
+                            message: '查询数据出错！！！',
+                            type: 'error'
+                        });
+                    });
+                },
+            },
+        }
+
+        const header = {
+            template: '#header',
+            props: {
+                headerinfo: {},
+            },
+            data() {
+                return {
+                    license: ["用户问卷人员", "销售人员", "销售查询人员", "产品维护人员", "产品维护审核人员"],
+                }
+            },
+            methods: {
+            },
+        }
+
+        const amenu = {
+            template: '#amenu',
+            components: {
+                qt: qt,
+                query: query,        
+            },
+            props: {
+                qtn: {},
+                userid: "",
+            },
+            data() {
+                return {
+                    isShowQuestion: false,
+                    isShowUserInfo: false,
+                }
+            },
+            methods: {
+                showQuestion(){
+                    this.isShowQuestion = true;
+                    this.isShowUserInfo = false;
+                },
+                showUserInfo(){
+                    this.isShowQuestion = false;
+                    this.isShowUserInfo = true;
+                }
+            },
+        }
+
+        const bmenu = {
+            template: '#bmenu',
+            props: {
+                qtn: {},
+                userid: "",
+            },
+            data() {
+                return {
+                    isShowQuestion: false,
+                    isShowUserInfo: false,
+                }
+            },
+            methods: {
+                showQuestion(){
+                    this.isShowQuestion = true;
+                    this.isShowUserInfo = false;
+                },
+                showUserInfo(){
+                    this.isShowQuestion = false;
+                    this.isShowUserInfo = true;
+                }
+            },
+        }
+
+        const app = new Vue({
+            el: "#app",
+            components: {
+                ananheader : header,
+                amenu: amenu,
+                bmenu: bmenu,
+            },
+            data: {
+                userInfo: {},
+                menuType: ["amenu","bmenu","cmenu","dmenu","dmenu"],
+                queryTable: ["questionnaire"],
+                questionnaire: {},
+            },
+            created(){
+                let that = this;
+                this.userInfo = JSON.parse(this.getQueryVariable("userInfo"));
+                if(this.queryTable[parseInt(this.userInfo.license)] == null || this.queryTable[parseInt(this.userInfo.license)] == undefined){
+                    this.questionnaire[0] = "正在开发中...敬请期待..."
+                    return;
+                }
+                axios.post('http://localhost:8888/formssi/' 
+                + this.queryTable[parseInt(this.userInfo.license)] +'/' 
+                + this.menuType[parseInt(this.userInfo.license)],{
+                }).then(function (response) {
+                    // 返回试题信息
+                    that.questionnaire = response.data.success; 
+                }).catch(function(error){
+                    console.log(error);
+                    that.$message({
+                        message: '请求数据出错！！！',
+                        type: 'error'
+                    });
+                });
+            },
+            methods: {
+                getQueryVariable(name)
+                {
+                    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+                    var r = window.location.search.substr(1).match(reg);
+                    //decodeURIComponent
+                    if(r!=null){
+                        return  unescape(decodeURIComponent(r[2]));
+                    } 
+                    return null;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

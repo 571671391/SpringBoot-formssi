@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册页面</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/axios.min.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+    <script type="text/javascript" src="element/element.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/element/element.css">
+    <link rel="stylesheet" type="text/css" href="css/easyui.css">
+    <link rel="stylesheet" type="text/css" href="css/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: auto;
+            background: url(images/lgbg.gif) no-repeat center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .box {
+            position:absolute;
+            /*定位方式绝对定位absolute*/
+            position: absolute;
+            width: 680px;
+            height: 380px;
+            left:50%;
+            top:50%;
+            transform: translate(-50%, -50%);
+            opacity:0.93;
+        }
+
+        .box1 {
+            float: left;
+        }
+
+        .box2{
+            float: left;
+            /* text-align: center; */
+            background-image: url(images/lgbg2.gif);
+            height:380px;
+            width:480px;
+            padding:26px;
+            box-sizing:border-box;
+            overflow:auto;
+        }
+
+        .box2 h1{
+            margin: 0 0 0 100px;
+            color: #fff;
+            letter-spacing: 2px;
+            /*字符间的间距1px*/
+        }
+
+        .img {
+            height: 380px;
+            width:200px;
+            background-image: url(images/log2.png);
+        }
+
+        .inputbox{
+            margin: 20px 0;
+            width: 100%;
+            color: white;
+        }
+
+        .login {
+            margin: 0 0 0 56px;
+            text-align: center;
+            border-radius:10px; 
+            width:236px; 
+            height: 36px;
+            font-size:16px;
+            color: black;
+            letter-spacing: 1px;
+            /*字符间的间距1px*/
+            border:none;
+            border-bottom: 1px solid #fff;
+            outline:none;
+        }
+
+        .sex {
+            margin: 0 0 0 43px;
+            zoom: 130%;
+        }
+        
+        .btn {
+            margin: 0 0 0 56px;
+            text-align: center;
+            border:none;
+            font-size: 16px;
+            color:#fff;
+            background: #03a9f4;
+            height: 36px;
+            width: 236px;
+            cursor: pointer;
+            /*光标呈现为指示链接的指针（一只手）*/
+            border-radius:10px; 
+        }
+
+        .box2 a {
+            margin: 0 0 0 105px;
+            text-align: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .tip {
+            margin-left: 10px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .sexInfo {
+            margin-left: 10px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .selectbox {
+            margin: 0 0 0 38px;
+        }
+
+        .select {
+            margin: 0 0 0 16px;
+            height: 36px;
+            border-radius:10px; 
+            outline:none;
+            color: black;
+        }
+    </style>
+</head>
+<body class="easyui-layout">
+    <div id="wrap">
+        <div class="box">
+            <div class="box1">
+                <img class="img" src="images/log2.png">
+            </div>
+            <div class="box2">
+                <div>
+                    <h1>中国工商银行</h1>
+                    <div class="inputbox">
+                        <a href="login.html">已有账号？点击登录</a>
+                    </div>
+                    <div class="inputbox">
+                        <input type="text" class="login" v-model="userName" placeholder="请输入您的姓名" required>
+                        <label class="tip">*请输入16位数字</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="password" class="login" v-model="idCard" placeholder="请输入身份证号" required>
+                        <label class="tip">xxxxxxx</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="radio" class="sex" name="sex" value="男" v-model="sex"><label class="sexInfo">男</label>
+                        <input type="radio" class="sex" name="sex" value="女" v-model="sex"><label class="sexInfo">女</label>
+                    </div>
+                    <div class="selectbox">
+                        <select class="select" v-model="age">
+                            <option value="">请选择年龄</option>
+                            <option :value="item" v-for="(item, index) in 100" :key="index">{{item}}</option>
+                        </select>
+                        <select class="select" v-model="license">
+                            <option value="">请选择用户权限</option>
+                            <option :value="item" v-for="(item, index) in licenses" :key="index">{{item}}</option>
+                        </select>
+                        <label class="tip">xxxxxxx</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="text" class="login" v-model="icbcBranchNumber" placeholder="请输入工商分行号" required>
+                        <label class="tip">xxxxxxx</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="text" class="login" v-model="accountNumber" placeholder="请设置账号" required>
+                        <label class="tip">xxxxxxx</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="password" class="login" v-model="password" placeholder="请设置密码" required>
+                        <label class="tip">xxxxxxx</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="button" class="btn" value="注册" @click="register">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: "#wrap",
+            data: {
+                userName: "",
+                idCard: "",
+                sex: "男",
+                age: "",
+                license: "",
+                licenses: ["用户问卷人员", "销售人员", "销售查询人员", "产品维护人员", "产品维护审核人员"],
+                icbcBranchNumber: "",
+                accountNumber: null,
+                password: null
+            },
+            methods: {
+                register(){
+                    var that = this;
+                    if(this.accountNumber == null || this.password == null){
+                        this.$message('请输入账号和密码');
+                    }else{
+                        axios.post('http://localhost:8888/formssi/user/register',{
+                            userName: that.userName,
+                            idCard: that.idCard,
+                            sex: that.sex,
+                            age: that.age,
+                            license: that.getArrayIndex(that.licenses, that.license),
+                            icbcBranchNumber: that.icbcBranchNumber,
+                            accountNumber: that.accountNumber,
+                            password: that.password
+                        }).then(function (response) {
+                            if(response.data.success == 1){
+                                that.$message({
+                                    message: '注册成功',
+                                    type: 'success',
+                                });
+                                setTimeout(() =>{
+                                    location.href = 'login.html';
+                                },2000);
+                            }
+                        }).catch(function(error){
+                            console.log(error);
+                            that.$message({
+                                message: '账号或密码错误，请重新输入！',
+                                type: 'warning'
+                            });
+                        });
+                    }
+                },
+                getArrayIndex(arr, obj) {
+                    var i = arr.length;
+                    while (i--) {
+                        if (arr[i] === obj) {
+                            return i;
+                        }
+                    }
+                    return false;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

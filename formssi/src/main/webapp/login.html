@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆页面</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+    <script type="text/javascript" src="js/axios.min.js"></script>
+    <script type="text/javascript" src="element/element.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="element/element.css">
+    <link rel="stylesheet" type="text/css" href="css/easyui.css">
+    <link rel="stylesheet" type="text/css" href="css/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: auto;
+            background: url(images/lgbg.gif) no-repeat center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .box {
+            position:absolute;
+            /*定位方式绝对定位absolute*/
+            top:50%;
+            left:50%;
+            /*顶和高同时设置50%实现的是同时水平垂直居中效果*/
+            transform:translate(-50%,-50%);
+            width: 560px;
+            height: 380px;
+            opacity:0.93;
+        }
+
+        .box1 {
+            float: left;
+        }
+
+        .box2{
+            float: left;
+            text-align: center;
+            background-image: url(images/lgbg2.gif);
+            height:380px;
+            width:360px;
+            padding:26px;
+            box-sizing:border-box;
+        }
+
+        .box2 h1{
+            margin: 0;
+            color: #fff;
+            letter-spacing: 2px;
+            /*字符间的间距1px*/
+        }
+
+        .img {
+            height: 380px;
+            width:200px;
+        }
+
+        .inputbox{
+            margin: 38px 0;
+            width: 100%;
+            text-align: center ;
+        }
+
+        .login {
+            text-align: center;
+            border-radius:10px; 
+            width:236px; 
+            height: 36px;
+            font-size:16px;
+            color: black;
+            letter-spacing: 1px;
+            /*字符间的间距1px*/
+            border:none;
+            border-bottom: 1px solid #fff;
+            outline:none;
+        }
+        
+        .btn {
+            text-align: center;
+            border:none;
+            font-size: 16px;
+            color:#fff;
+            background: #03a9f4;
+            height: 36px;
+            width: 236px;
+            cursor: pointer;
+            /*光标呈现为指示链接的指针（一只手）*/
+            border-radius:10px; 
+            outline:none;
+        }
+
+        .box2 a {
+            text-align: center;
+            font-size: 16px;
+            color: white;
+        }
+    </style>
+</head>
+<body class="easyui-layout">
+    <div id="wrap">
+        <div class="box">
+            <div class="box1">
+                <img class="img" src="images/log2.png">
+            </div>
+            <div class="box2">
+                <div>
+                    <h1>中国工商银行</h1>
+                    <div class="inputbox">
+                        <input type="text" class="login" v-model="accountNumber" placeholder="请输入用户名">
+                    </div>
+                    <div class="inputbox">
+                        <input type="password" class="login" v-model="password" placeholder="请输入密码">
+                    </div>
+                    <div class="inputbox">
+                        <input type="button" class="btn" value="登录" @click="login">
+                    </div>
+                    <div class="inputbox">
+                        <a href="register.html">没有账号？点击注册</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: "#wrap",
+            data: {
+                accountNumber: null,
+                password: null
+            },
+            methods: {
+                login(){
+                    var that = this;
+                    if(this.accountNumber == null || this.password == null){
+                        this.$message({
+                            message: '请输入账号和密码',
+                            type: 'warning',
+                        });
+                    }else{
+                        axios.post('http://localhost:8888/formssi/user/login',{
+                            accountNumber: that.accountNumber,
+                            password: that.password
+                        }).then(function (response) {
+                            let userInfo = response.data.success;
+                            if(userInfo != null){
+                                that.$message({
+                                    message: '登陆成功',
+                                    type: 'success',
+                                });
+                                setTimeout(() =>{
+                                   location.href = 'main.html?userInfo=' + encodeURIComponent(JSON.stringify(userInfo));
+                                   //location.href = "register.html";
+                                },2000);
+                            }else {
+                                that.$message({
+                                message: '账号或密码错误，请重新输入！',
+                                type: 'warning'
+                            });
+                            }
+                        }).catch(function(error){
+                            console.log(error);
+                            that.$message({
+                                message: '系统出现未知错误！！！',
+                                type: 'error'
+                            });
+                        });
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
